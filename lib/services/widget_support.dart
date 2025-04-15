@@ -16,10 +16,26 @@ class AppWidget {
     );
   }
 
-    static TextStyle whiteTextFieldStyle() {
+  static TextStyle whiteTextFieldStyle() {
     return const TextStyle(
       fontSize: 18.0,
       color: Colors.white,
+      fontWeight: FontWeight.bold,
+    );
+  }
+
+  static TextStyle boldTextFieldStyle() {
+    return const TextStyle(
+      fontSize: 20.0,
+      color: Colors.black,
+      fontWeight: FontWeight.bold,
+    );
+  }
+
+    static TextStyle priceTextFieldStyle() {
+    return const TextStyle(
+      fontSize: 24.0,
+      color: Colors.black38,
       fontWeight: FontWeight.bold,
     );
   }
