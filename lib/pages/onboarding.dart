@@ -15,7 +15,7 @@ class _OnboardingState extends State<Onboarding> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView( // 👈 Add this
         child: Container(
-          margin: const EdgeInsets.only(top: 40),
+          margin: const EdgeInsets.only(top: 40, left: 30, right: 30),
           child: Column(
             children: [
               Image.asset(
@@ -23,16 +23,16 @@ class _OnboardingState extends State<Onboarding> {
               ),
               const SizedBox(height: 20.0), // Add some space between the image and the text
               Text(
-                "Welcome to Food Delivery App",
+                "The Fastest Food Delivery App",
                 textAlign: TextAlign.center,
-                style: AppWidget.HeadlineTextFieldStyle()
+                style: AppWidget.headlineTextFieldStyle()
               ),
               const SizedBox(height: 20.0), // Add some space between the title and the subtitle
               Text("Come order Now and deliver your food to your home",
                 textAlign: TextAlign.center,
-                style: AppWidget.SimpleTextFieldStyle()
+                style: AppWidget.simpleTextFieldStyle()
               ),
-              const SizedBox(height: 20.0), // Add some space between the subtitle and the button
+              const SizedBox(height: 30.0), // Add some space between the subtitle and the button
               Container(
                 height: 60,
                 width: MediaQuery.of(context).size.width / 2,
@@ -43,7 +43,7 @@ class _OnboardingState extends State<Onboarding> {
                 child: Center(
                   child: Text(
                     "Get Started",
-                    style: AppWidget.SimpleTextFieldStyle().copyWith(color: Colors.white)
+                    style: AppWidget.simpleTextFieldStyle().copyWith(color: Colors.white)
                   ),
                 ),
               )

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery_app/pages/onboarding.dart';
+import 'package:food_delivery_app/pages/home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const Onboarding(),
+      home: const Home(),
     );
   }
 }
