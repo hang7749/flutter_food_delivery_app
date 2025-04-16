@@ -1,17 +1,15 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:food_delivery_app/pages/login.dart';
+import 'package:food_delivery_app/pages/signup.dart';
 import 'package:food_delivery_app/services/widget_support.dart';
 
-class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  State<SignUp> createState() => _SignUpState();
+  State<Login> createState() => _LoginState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +50,7 @@ class _SignUpState extends State<SignUp> {
             ),
             Container(
               margin: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height / 2.9,
+                  top: MediaQuery.of(context).size.height / 2.75,
                   left: 20,
                   right: 20
               ),
@@ -74,29 +72,8 @@ class _SignUpState extends State<SignUp> {
                         const SizedBox(height: 10),
                         Center(
                           child: Text(
-                            "Sign Up",
+                            "Log In",
                             style: AppWidget.headlineTextFieldStyle(),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          "Name",
-                          style: AppWidget.signUpTextFieldStyle(),
-                        ),
-                        const SizedBox(height: 5),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color(0xFFececf8),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: "Enter your name",
-                              prefixIcon: Icon(
-                                Icons.person_outline,
-                              ),
-                            ),
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -142,6 +119,16 @@ class _SignUpState extends State<SignUp> {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              "Forgot Password?",
+                              style: AppWidget.simpleTextFieldStyle(),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 20),
                         Center(
                           child: Container(
@@ -164,7 +151,7 @@ class _SignUpState extends State<SignUp> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Already have an account?",
+                              "Don't have an account?",
                               style: AppWidget.simpleTextFieldStyle(),
                             ),
                             const SizedBox(width: 10),
@@ -173,12 +160,12 @@ class _SignUpState extends State<SignUp> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => Login(),
+                                    builder: (context) => SignUp(),
                                   ),
                                 );
                               },
                               child: Text(
-                                "LogIn",
+                                "SignUp",
                                 style: AppWidget.boldTextFieldStyle(),
                               ),
                             )
