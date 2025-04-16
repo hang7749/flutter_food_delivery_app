@@ -24,6 +24,14 @@ class AppWidget {
     );
   }
 
+    static TextStyle boldWhiteTextFieldStyle() {
+    return const TextStyle(
+      fontSize: 24.0,
+      color: Colors.white,
+      fontWeight: FontWeight.bold,
+    );
+  }
+
   static TextStyle boldTextFieldStyle() {
     return const TextStyle(
       fontSize: 20.0,

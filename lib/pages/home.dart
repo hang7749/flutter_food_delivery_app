@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:food_delivery_app/model/category_model.dart';
 import 'package:food_delivery_app/model/pizza_model.dart';
 import 'package:food_delivery_app/model/burger_model.dart';
+import 'package:food_delivery_app/pages/detail_page.dart';
 import 'package:food_delivery_app/services/category_data.dart';
 import 'package:food_delivery_app/services/pizza_data.dart';
 import 'package:food_delivery_app/services/burger_data.dart';
@@ -140,10 +141,10 @@ class _HomeState extends State<Home> {
                   ),
                   itemCount: pizza.length,
                   itemBuilder: (context, index) {
-                    return FoodTile(
+                    return foodTile(
                       pizza[index].name!,
                       pizza[index].image!,
-                      "\$${pizza[index].price!}",
+                      pizza[index].price!,
                     );
                   },
                 ),
@@ -161,10 +162,10 @@ class _HomeState extends State<Home> {
                   ),
                   itemCount: burger.length,
                   itemBuilder: (context, index) {
-                    return FoodTile(
+                    return foodTile(
                       burger[index].name!,
                       burger[index].image!,
-                      "\$${burger[index].price!}",
+                      burger[index].price!,
                     );
                   },
                 ),
@@ -178,7 +179,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget FoodTile(String name, String image, String price) {
+  Widget foodTile(String name, String image, String price) {
     return Container(
       padding: const EdgeInsets.only(left: 10, top: 10),
       decoration: BoxDecoration(
@@ -207,25 +208,36 @@ class _HomeState extends State<Home> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Container(
-                height: 50,
-                width: 80,
-                decoration: BoxDecoration(
-                  color: Colors.deepOrange,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    bottomRight: Radius.circular(20),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailPage(
+                        name: name,
+                        image: image,
+                        price: price,
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 50,
+                  width: 80,
+                  decoration: BoxDecoration(
+                    color: Colors.deepOrange,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      bottomRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Icon(
+                      Icons.arrow_forward,
+                      color: Colors.white,
+                      size: 30,
+                    ),
                   ),
                 ),
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.arrow_forward,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                ),
-              ),
             ],
           )
         ],
