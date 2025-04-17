@@ -39,6 +39,7 @@ dependencies:
   firebase_core: 
   firebase_auth:
   random_string:
+  shared_preferences:
 
 dev_dependencies:
   flutter_test:

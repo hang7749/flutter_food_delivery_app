@@ -2,7 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/pages/bottom_nav.dart';
 import 'package:food_delivery_app/pages/login.dart';
+import 'package:food_delivery_app/services/database.dart';
+import 'package:food_delivery_app/services/shared_pref.dart';
 import 'package:food_delivery_app/services/widget_support.dart';
+import 'package:random_string/random_string.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -27,13 +30,30 @@ class _SignUpState extends State<SignUp> {
           email: email!,
           password: password!,
         );
-        // User registration successful
+
+        String Id = randomAlphaNumeric(10);
+
+        Map<String, dynamic> userInfoMap = {
+          "name": name,
+          "email": email,
+          "password": password,
+          "id": Id,
+        };
+
+        await SharedpreferenceHelper().saveUserEmail(email!);
+        await SharedpreferenceHelper().saveUserName(nameController.text);
+        await DatabaseMethods().addUserDetails(userInfoMap, Id);
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+            backgroundColor: Colors.green,
             content: Text(
-              "User registered successfully",
-              style: AppWidget.simpleTextFieldStyle(),
+              "User Registered Successfully",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             duration: Duration(seconds: 2),
           ),
