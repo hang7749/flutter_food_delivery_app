@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:food_delivery_app/pages/bottom_nav.dart';
 import 'package:food_delivery_app/pages/signup.dart';
 import 'package:food_delivery_app/services/widget_support.dart';
 
@@ -10,6 +13,84 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+
+  String? email, password;
+  TextEditingController emailController = TextEditingController(); 
+  TextEditingController passwordController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+
+  userLogin() async {
+    try {
+
+      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email!, password: password!);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green,
+          content: Text(
+            "User Login Successfully",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          duration: Duration(seconds: 4),
+        ),
+      );
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BottomNav(),
+        ),
+      );
+
+    } on FirebaseException catch (e) {
+      if (e.code == 'user-not-found') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "No user found for that email.",
+              style: TextStyle(
+                fontSize: 18,
+                backgroundColor: Colors.red,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+      } else if (e.code == 'wrong-password') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Wrong password provided for that user.",
+              style: TextStyle(
+                fontSize: 18,
+                backgroundColor: Colors.red,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+      } else if (e.code == 'invalid-email') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "The email address is badly formatted.",
+              style: TextStyle(
+                fontSize: 18,
+                backgroundColor: Colors.red,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,6 +169,7 @@ class _LoginState extends State<Login> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: TextField(
+                            controller: emailController,
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: "Enter your email",
@@ -110,6 +192,7 @@ class _LoginState extends State<Login> {
                           ),
                           child: TextField(
                             obscureText: true,
+                            controller: passwordController,
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: "Enter your password",
@@ -130,18 +213,40 @@ class _LoginState extends State<Login> {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        Center(
-                          child: Container(
-                            width: 200,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.deepOrange,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Center(
-                              child: Text(
-                                "Sign Up",
-                                style: AppWidget.boldWhiteTextFieldStyle(),
+                        GestureDetector(
+                          onTap: () {
+                            email = emailController.text.trim();
+                            password = passwordController.text.trim();
+                            if (email != null && password != null) {
+                              userLogin();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    "Please fill in all fields.",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      backgroundColor: Colors.red,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: Center(
+                            child: Container(
+                              width: 200,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.deepOrange,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Sign Up",
+                                  style: AppWidget.boldWhiteTextFieldStyle(),
+                                ),
                               ),
                             ),
                           ),

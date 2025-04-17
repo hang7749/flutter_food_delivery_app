@@ -55,7 +55,7 @@ class _SignUpState extends State<SignUp> {
                 color: Colors.white,
               ),
             ),
-            duration: Duration(seconds: 2),
+            duration: Duration(seconds: 4),
           ),
         );
 
