@@ -16,7 +16,7 @@ void main() async{
   await dotenv.load(fileName: '.env');
   
   // Initialize Stripe
-  String publishableKey = dotenv.env['STRIPE_PUBLISHED_KEY'] ?? '';
+  String publishableKey = dotenv.env['STRIPE_PUBLISHED_KEY'] ?? "Something went wrong";
   Stripe.publishableKey = publishableKey;
   //Stripe.publishableKey = publishedKey;
   await Firebase.initializeApp();
