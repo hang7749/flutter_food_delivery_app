@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:food_delivery_app/services/database.dart';
 import 'package:food_delivery_app/services/shared_pref.dart';
 import 'package:food_delivery_app/services/widget_support.dart';
-import 'package:food_delivery_app/services/constant.dart';
+//import 'package:food_delivery_app/services/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:random_string/random_string.dart';
 
@@ -336,6 +337,9 @@ class _DetailPageState extends State<DetailPage> {
 
   createPaymentIntent(String amount, String currency) async {
     try {
+
+      String secretKey = dotenv.env['STRIPE_SECRET_KEY'] ?? '';
+      
       Map<String, dynamic> body = {
         'amount': calculateAmount(amount),
         'currency': currency,
