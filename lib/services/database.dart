@@ -36,4 +36,18 @@ class DatabaseMethods {
       print(e.toString());
     }
   }
+
+  Future<Stream<QuerySnapshot>> getUserOrders(String id) async {
+    try {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(id)
+          .collection("Orders")
+          .snapshots();
+    } catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+      throw Exception("Failed to fetch user orders: $e");
+    }
+  }
 }

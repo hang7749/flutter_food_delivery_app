@@ -26,13 +26,16 @@ class _DetailPageState extends State<DetailPage> {
 
   int quantity = 1;
   int totalPrice = 0;
-  String? name, id, email ;
+  String? name, id, email, address;
   Map<String, dynamic>? paymentIntent;
+
+  TextEditingController addresscontoller = TextEditingController();
 
   getTheSharedPref() async {
     name = await SharedpreferenceHelper().getUserName();
     id = await SharedpreferenceHelper().getUserId();
     email = await SharedpreferenceHelper().getUserEmail();
+    address = await SharedpreferenceHelper().getUserAddress();
 
     setState(() {
       
@@ -49,190 +52,183 @@ class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        margin: const EdgeInsets.only(top: 50, left: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  color: Colors.deepOrange,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Icon(
-                  Icons.arrow_back, 
-                  color: Colors.white, 
-                  size: 30
+      body: SingleChildScrollView(
+        child: Container(
+          margin: const EdgeInsets.only(top: 50, left: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: Colors.deepOrange,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(
+                    Icons.arrow_back, 
+                    color: Colors.white, 
+                    size: 30
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 10),
-            Center(
-              child: Image.asset(
-                widget.image, 
-                height: MediaQuery.of(context).size.height / 3,
-                fit: BoxFit.contain,
+              SizedBox(height: 10),
+              Center(
+                child: Image.asset(
+                  widget.image, 
+                  height: MediaQuery.of(context).size.height / 3,
+                  fit: BoxFit.contain,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Text(widget.name, 
-              style: AppWidget.headlineTextFieldStyle()
-            ),
-            Text("\$${widget.price}", 
-              style: AppWidget.priceTextFieldStyle()
-            ),
-            const SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: Text(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+              const SizedBox(height: 20),
+              Text(widget.name, 
+                style: AppWidget.headlineTextFieldStyle()
+              ),
+              Text("\$${widget.price}", 
+                style: AppWidget.priceTextFieldStyle()
+              ),
+              const SizedBox(height: 30),
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Text(
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+                  style: AppWidget.simpleTextFieldStyle(),
+                ),
+              ),
+              const SizedBox(height: 30),
+              Text(
+                "Quantity",
                 style: AppWidget.simpleTextFieldStyle(),
               ),
-            ),
-            const SizedBox(height: 30),
-            Text(
-              "Quantity",
-              style: AppWidget.simpleTextFieldStyle(),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-
-                    setState(() {
-                      if (quantity < 10) {
-                        quantity = quantity + 1;
-                        totalPrice = totalPrice + int.parse(widget.price);
-                      }
-                    });
-                  },
-                  child: Material(
-                    elevation: 3.0,
-                    borderRadius: BorderRadius.circular(10),
-                    child: Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.deepOrange,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        Icons.add, 
-                        color: Colors.white, 
-                        size: 30
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+        
+                      setState(() {
+                        if (quantity < 10) {
+                          quantity = quantity + 1;
+                          totalPrice = totalPrice + int.parse(widget.price);
+                        }
+                      });
+                    },
+                    child: Material(
+                      elevation: 3.0,
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.deepOrange,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.add, 
+                          color: Colors.white, 
+                          size: 30
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 20),
-                Text(
-                  "1",
-                  style: AppWidget.headlineTextFieldStyle(),
-                ),
-                const SizedBox(width: 20),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (quantity > 1) {
-                        quantity = quantity - 1;
-                        totalPrice = int.parse(widget.price) * quantity;
-                      }
-                    });
-                 
-                  },
-                  child: Material(
-                    elevation: 3.0,
-                    borderRadius: BorderRadius.circular(10),
-                    child: Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.deepOrange,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        Icons.remove, 
-                        color: Colors.white, 
-                        size: 30
+                  const SizedBox(width: 20),
+                  Text(
+                    "1",
+                    style: AppWidget.headlineTextFieldStyle(),
+                  ),
+                  const SizedBox(width: 20),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (quantity > 1) {
+                          quantity = quantity - 1;
+                          totalPrice = int.parse(widget.price) * quantity;
+                        }
+                      });
+                   
+                    },
+                    child: Material(
+                      elevation: 3.0,
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.deepOrange,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.remove, 
+                          color: Colors.white, 
+                          size: 30
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 20),
-              ],
-            ),
-            const SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Material(
-                  elevation: 3.0,
-                  borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                    height: 70,
-                    width: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.deepOrange,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "\$ $totalPrice",
-                        style: AppWidget.boldWhiteTextFieldStyle(),
-                      ),
-                    )
-                  ),
-                ),
-                const SizedBox(width: 30),
-                GestureDetector(
-                  onTap: () {
-                    makePayment(totalPrice.toString());
-                  },
-                  child: Material(
+                  const SizedBox(width: 20),
+                ],
+              ),
+              const SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Material(
                     elevation: 3.0,
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
                       height: 70,
-                      width: 150,
+                      width: 120,
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: Colors.deepOrange,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Center(
                         child: Text(
-                          "Order Now",
-                          style: AppWidget.whiteTextFieldStyle(),
+                          "\$ $totalPrice",
+                          style: AppWidget.boldWhiteTextFieldStyle(),
                         ),
                       )
                     ),
                   ),
-                )
-              ],
-            )
-          ],
+                  const SizedBox(width: 30),
+                  GestureDetector(
+                    onTap: () {
+                      if (address == null) {
+                        openBox();
+                      } else{
+                        makePayment(totalPrice.toString());
+                      }
+                      
+                    },
+                    child: Material(
+                      elevation: 3.0,
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        height: 70,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Order Now",
+                            style: AppWidget.whiteTextFieldStyle(),
+                          ),
+                        )
+                      ),
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
         ),
       )
     );
   }
-
-  // Future<void> makePayment(String amount) async {
-  //   try {
-  //     paymentIntent = await createPaymentIntent(amount, 'USD');
-  //     await Stripe.instance.initPaymentSheet(paymentSheetParameters: SetupPaymentSheetParameters(
-  //       paymentIntentClientSecret: paymentIntent?['client_secret'],
-  //       style: ThemeMode.dark,
-  //       merchantDisplayName: 'Admin'))
-  //     .then((value) => {});
-
-  //   } catch (e, s) {
-  //     print('Error creating payment intent: $e$s');
-  //   }
-  // }
-
+  
   Future<void> makePayment(String amount) async {
   try {
     // 1. Create payment intent
@@ -279,6 +275,7 @@ class _DetailPageState extends State<DetailPage> {
           "FoodImage": widget.image,
           "OrderId": orderId,
           "Status": "Pending",
+          "Address": address ?? addresscontoller.text,
         };
 
         await DatabaseMethods().addUserOrderDetails(userOrderMap, id!, orderId);
@@ -365,5 +362,49 @@ class _DetailPageState extends State<DetailPage> {
     return calculatedAmount.toString();
   }
   
+  void openBox() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Enter Address"),
+        content: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.4, // Adjust height as needed
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: addresscontoller,
+                  decoration: InputDecoration(
+                    hintText: "Address",
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              if (addresscontoller.text.isNotEmpty) {
+                setState(() {
+                  address = addresscontoller.text;
+                });
+                Navigator.pop(context);
+                makePayment(totalPrice.toString());
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Please enter your address")),
+                );
+              }
+            },
+            child: Text("Submit"),
+          ),
+        ],
+      ),
+    );
+  }
 
 }
