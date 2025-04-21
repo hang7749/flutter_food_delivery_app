@@ -1,16 +1,23 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:food_delivery_app/config/stripe_config.dart';
 import 'package:food_delivery_app/pages/bottom_nav.dart';
 import 'package:food_delivery_app/pages/detail_page.dart';
 import 'package:food_delivery_app/pages/home.dart';
 import 'package:food_delivery_app/pages/login.dart';
 import 'package:food_delivery_app/pages/signup.dart';
-import 'package:food_delivery_app/services/constant.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  Stripe.publishableKey = publishedKey;
+
+    // Load environment variables
+  await dotenv.load(fileName: '.env');
+  
+  // Initialize Stripe
+  Stripe.publishableKey = StripeConfig.publishableKey;
+  //Stripe.publishableKey = publishedKey;
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
