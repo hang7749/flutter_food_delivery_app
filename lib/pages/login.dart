@@ -244,7 +244,7 @@ class _LoginState extends State<Login> {
                               ),
                               child: Center(
                                 child: Text(
-                                  "Sign Up",
+                                  "Log In",
                                   style: AppWidget.boldWhiteTextFieldStyle(),
                                 ),
                               ),

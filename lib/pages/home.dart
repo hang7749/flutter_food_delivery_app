@@ -201,7 +201,7 @@ class _HomeState extends State<Home> {
           Text(name,
             style: AppWidget.boldTextFieldStyle()
           ),
-          Text(price,
+          Text("\$$price",
             style: AppWidget.priceTextFieldStyle()
           ),  
           Spacer(),
