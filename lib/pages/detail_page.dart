@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -26,7 +27,7 @@ class _DetailPageState extends State<DetailPage> {
 
   int quantity = 1;
   int totalPrice = 0;
-  String? name, id, email, address;
+  String? name, id, email, address, wallet;
   Map<String, dynamic>? paymentIntent;
 
   TextEditingController addresscontoller = TextEditingController();
@@ -42,10 +43,19 @@ class _DetailPageState extends State<DetailPage> {
     });
   }
 
+  getUserWallet() async {
+    await getTheSharedPref();
+    QuerySnapshot querySnapshot = await DatabaseMethods().getUserWalletByEmail(email!);
+    wallet = "${querySnapshot.docs[0]['wallet']}";
+    setState(() {
+      
+    });
+  }
+
   @override
   void initState() {
     totalPrice = int.parse(widget.price);
-    getTheSharedPref();
+    getUserWallet();
     super.initState();
   }
 
@@ -193,11 +203,59 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   const SizedBox(width: 30),
                   GestureDetector(
-                    onTap: () {
+                    onTap: () async{
                       if (address == null) {
                         openBox();
-                      } else{
-                        makePayment(totalPrice.toString());
+                      } else if(int.parse(wallet!) > totalPrice) {
+                        int updatedWallet = int.parse(wallet!) - totalPrice;
+                        await DatabaseMethods().updateUserWallet(updatedWallet.toString(), id!);
+
+                        String orderId = randomAlphaNumeric(10);
+
+                        Map<String, dynamic> userOrderMap = {
+                          "Name": name,
+                          "Id": id,
+                          "Quantity": quantity.toString(),
+                          "Total": totalPrice.toString(),
+                          "Email": email,
+                          "FoodName": widget.name,
+                          "FoodImage": widget.image,
+                          "OrderId": orderId,
+                          "Status": "Pending",
+                          "Address": address ?? addresscontoller.text,
+                        };
+
+                        await DatabaseMethods().addUserOrderDetails(userOrderMap, id!, orderId);
+                        await DatabaseMethods().addAdminOrderDetails(userOrderMap, orderId);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.green,
+                            content: Text(
+                              "Order Placed Successfully",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            duration: Duration(seconds: 4),
+                          )
+                        );
+                        
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text(
+                              "Insufficient Wallet Balance",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          )
+                        );
                       }
                       
                     },
@@ -229,182 +287,85 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
   
-  Future<void> makePayment(String amount) async {
-  try {
-    // 1. Create payment intent
-    paymentIntent = await createPaymentIntent(amount, 'USD');
-    
-
-    print("Payment Intent: $paymentIntent");
-
-    // 2. Initialize payment sheet
-    await Stripe.instance.initPaymentSheet(
-      paymentSheetParameters: SetupPaymentSheetParameters(
-        paymentIntentClientSecret: paymentIntent!['client_secret'],
-        style: ThemeMode.dark,
-        merchantDisplayName: 'Food Delivery App',
-        // customerId: paymentIntent!['customer'],
-        // customerEphemeralKeySecret: paymentIntent!['ephemeralKey'],
-      ),
-    );
-    
-    // 3. Display the payment sheet
-    displayPaymentSheet(amount);
-    
-  } catch (e, s) {
-    print('Payment error: $e\n$s');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Payment failed: ${e.toString()}')),
-    );
-  }
-}
-
-  displayPaymentSheet(String amount) async {
-    try {
-      await Stripe.instance.presentPaymentSheet().then((value) async{
-
-        String orderId = randomAlphaNumeric(10);
-
-        Map<String, dynamic> userOrderMap = {
-          "Name": name,
-          "Id": id,
-          "Quantity": quantity.toString(),
-          "Total": totalPrice.toString(),
-          "Email": email,
-          "FoodName": widget.name,
-          "FoodImage": widget.image,
-          "OrderId": orderId,
-          "Status": "Pending",
-          "Address": address ?? addresscontoller.text,
-        };
-
-        await DatabaseMethods().addUserOrderDetails(userOrderMap, id!, orderId);
-        await DatabaseMethods().addAdminOrderDetails(userOrderMap, orderId);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.green,
-            content: Text(
-              "Order Placed Successfully",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            duration: Duration(seconds: 4),
-          )
-        );
-
-        showDialog(
-          context: context, 
-          builder: (_) => AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(children: [
-                  Icon(
-                    Icons.check_circle, 
-                    color: Colors.green
+  Future openBox() => showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      content: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Icon(Icons.cancel),
                   ),
-                  Text('Payment Successful'),
+                  SizedBox(
+                    width: 30,
+                  ),
+                  Text(
+                    "Enter Address",
+                    style: AppWidget.boldTextFieldStyle(),
+                  ),
                 ],
-  
-                )
-              ],
-            ),
-          ));
-
-          paymentIntent = null;
-
-      }).onError((error, stackTrace) {
-        print("Error is : ---> $error $stackTrace");
-      });
-    } on StripeException catch (e) {
-      print('Error displaying payment sheet: ${e.error}');
-      showDialog(
-        context: context, 
-        builder: (_) => AlertDialog(
-          content: Text("Cancelled"),
-      ));
-    } catch (e) {
-      print('Error displaying payment sheet: $e');
-    }
-  }
-
-  createPaymentIntent(String amount, String currency) async {
-    try {
-
-      String secretKey = dotenv.env['STRIPE_SECRET_KEY'] ?? '';
-      
-      Map<String, dynamic> body = {
-        'amount': calculateAmount(amount),
-        'currency': currency,
-        'payment_method_types[]': 'card',
-      };
-      var response = await http.post(
-        Uri.parse('https://api.stripe.com/v1/payment_intents'),
-        headers: {
-          'Authorization': 'Bearer $secretKey',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body,
-      );
-      return jsonDecode(response.body);
-    } catch (err) {
-      print('Error creating payment intent: ${err.toString()}');
-    }
-  }
-
-  calculateAmount(String amount) {
-    final calculatedAmount = (int.parse(amount) * 100);
-
-    return calculatedAmount.toString();
-  }
-  
-  void openBox() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Enter Address"),
-        content: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.4, // Adjust height as needed
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Text("Enter Address"),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: Colors.black38,
+                    width: 2
+                  ),
+                ),
+                child: TextField(
                   controller: addresscontoller,
                   decoration: InputDecoration(
                     hintText: "Address",
+                    border: InputBorder.none,
                   ),
                 ),
-              ],
-            ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              GestureDetector(
+                onTap: () async {
+                  address = addresscontoller.text;
+                  await SharedpreferenceHelper().saveUserAddress(address!);
+                  Navigator.pop(context);
+                },
+                child: Center(
+                  child: Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color: Color(0xffef2b39),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Enter Address",
+                        style: AppWidget.boldWhiteTextFieldStyle(),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              if (addresscontoller.text.isNotEmpty) {
-                setState(() {
-                  address = addresscontoller.text;
-                });
-                Navigator.pop(context);
-                makePayment(totalPrice.toString());
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Please enter your address")),
-                );
-              }
-            },
-            child: Text("Submit"),
-          ),
-        ],
       ),
-    );
-  }
-
+    ),
+  );
 }
