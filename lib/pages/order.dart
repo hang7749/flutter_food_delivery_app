@@ -45,10 +45,11 @@ class _OrderState extends State<Order> {
         return snapshot.hasData? ListView.builder(
           itemCount: snapshot.data.docs.length,
           itemBuilder:(context, index){
-            DocumentSnapshot ds = snapshot.data.docs[index];
-            
+            DocumentSnapshot ds = snapshot.data.docs[index];            
+            var orderData = ds.data() as Map<String, dynamic>;
+
             return Container(
-                margin: const EdgeInsets.only(left: 20, right: 20),
+                margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                 child: Material(
                   elevation: 3,
                   borderRadius: BorderRadius.only(
@@ -76,7 +77,7 @@ class _OrderState extends State<Order> {
                               Icons.location_on_outlined,
                               color: Colors.red, size: 30),
                               Text(
-                                "Near Market",
+                                orderData["Address"],
                                 style: AppWidget.simpleTextFieldStyle(),
                               )
                           ],
@@ -85,10 +86,10 @@ class _OrderState extends State<Order> {
                         Row(
                           children: [
                             Image.asset(
-                              "images/burger1.png",
+                              orderData["FoodImage"],
                               height: 120,
                               width: 120,
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                             ),
                             const SizedBox(
                               width: 20,
@@ -97,7 +98,7 @@ class _OrderState extends State<Order> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Cheese Burger",
+                                  orderData["FoodName"],
                                   style: AppWidget.boldTextFieldStyle(),
                                 ),
                                 const SizedBox(
@@ -113,7 +114,7 @@ class _OrderState extends State<Order> {
                                       width: 10,
                                     ),
                                     Text(
-                                      "4",
+                                      orderData["Quantity"].toString(),
                                       style: AppWidget.boldTextFieldStyle(),
                                     ),
                                     const SizedBox(
@@ -127,7 +128,7 @@ class _OrderState extends State<Order> {
                                       width: 10,
                                     ),
                                     Text(
-                                      "\$ 40",
+                                      "\$ ${orderData["Total"].toString()}",
                                       style: AppWidget.boldTextFieldStyle(),
                                     ),
                                   ],
@@ -136,7 +137,7 @@ class _OrderState extends State<Order> {
                                   height: 5,
                                 ),
                                 Text(
-                                  "Pending!",
+                                  orderData["Status"],
                                   style: AppWidget.boldTextFieldStyle().copyWith(
                                     color: Colors.red,
                                   ),
@@ -144,6 +145,9 @@ class _OrderState extends State<Order> {
                               ],
                             )
                           ],
+                        ),
+                        const SizedBox(
+                          height: 10,
                         ),
                       ],
                     ),
@@ -192,7 +196,7 @@ class _OrderState extends State<Order> {
                   Container(
                     height: MediaQuery.of(context).size.height / 1.5,
                     child: allOrders(),
-                  )
+                  ),
                 ],
               ),
             ),
