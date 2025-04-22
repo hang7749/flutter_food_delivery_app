@@ -31,19 +31,20 @@ class _SignUpState extends State<SignUp> {
           password: password!,
         );
 
-        String Id = randomAlphaNumeric(10);
+        String userId = randomAlphaNumeric(10);
 
         Map<String, dynamic> userInfoMap = {
           "name": name,
           "email": email,
           "password": password,
-          "id": Id,
+          "id": userId,
+          "wallet": "0",
         };
 
         await SharedpreferenceHelper().saveUserEmail(email!);
         await SharedpreferenceHelper().saveUserName(nameController.text);
-        await SharedpreferenceHelper().saveUserId(Id);
-        await DatabaseMethods().addUserDetails(userInfoMap, Id);
+        await SharedpreferenceHelper().saveUserId(userId);
+        await DatabaseMethods().addUserDetails(userInfoMap, userId);
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

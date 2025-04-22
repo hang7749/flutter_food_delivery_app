@@ -50,4 +50,29 @@ class DatabaseMethods {
       throw Exception("Failed to fetch user orders: $e");
     }
   }
+
+  Future<QuerySnapshot> getUserWalletByEmail(String email) async {
+    try {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .where("email", isEqualTo: email)
+          .get();
+    } catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+      throw Exception("Failed to fetch user email: $e");
+    }
+  }
+
+  Future updateUserWallet(String amount, String id) async {
+    try {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(id)
+          .update({"wallet":amount});
+    } catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+    }
+  }
 }

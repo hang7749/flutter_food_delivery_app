@@ -17,6 +17,7 @@ class _OrderState extends State<Order> {
   
   getTheSharedPref() async {
     id = await SharedpreferenceHelper().getUserId();
+    //print(id);
     setState(() {
       
     });
@@ -25,6 +26,7 @@ class _OrderState extends State<Order> {
   getontheload() async {
     await getTheSharedPref();
     ordersStream = await DatabaseMethods().getUserOrders(id!);
+    //print(ordersStream);
     setState(() {
       
     });
@@ -37,6 +39,8 @@ class _OrderState extends State<Order> {
   }
 
   Stream? ordersStream;
+  
+  late Map<String, dynamic> orderData;
 
   Widget allOrders() {
     return StreamBuilder(
@@ -46,8 +50,7 @@ class _OrderState extends State<Order> {
           itemCount: snapshot.data.docs.length,
           itemBuilder:(context, index){
             DocumentSnapshot ds = snapshot.data.docs[index];            
-            var orderData = ds.data() as Map<String, dynamic>;
-
+            orderData = ds.data() as Map<String, dynamic>;
             return Container(
                 margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                 child: Material(
