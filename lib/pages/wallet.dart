@@ -98,26 +98,77 @@ class _WalletState extends State<Wallet> {
                           ),
                         ),
                         const SizedBox(
-                          height: 20,
+                          height: 40,
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 20),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               Container(
                                 height: 50,
                                 width: 100,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
-                                  border: Border.all(color: Colors.black12),
-                                  //borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: Colors.black45, width: 2),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: Text(
-                                  "\$ 100",
-                                  style: AppWidget.priceTextFieldStyle(),
+                                child: Center(
+                                  child: Text(
+                                    "\$ 100",
+                                    style: AppWidget.priceTextFieldStyle(),
+                                  ),
+                                )
+                              ),
+                              Container(
+                                height: 50,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(color: Colors.black45, width: 2),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "\$ 100",
+                                    style: AppWidget.priceTextFieldStyle(),
+                                  ),
+                                )
+                              ),
+                              Container(
+                                height: 50,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(color: Colors.black45, width: 2),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "\$ 100",
+                                    style: AppWidget.priceTextFieldStyle(),
+                                  ),
                                 )
                               )
                             ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          height: 50,
+                          margin: const EdgeInsets.only(left: 20, right: 20),
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            color: Color(0xffef2b39),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Add Money",
+                              style: AppWidget.boldWhiteTextFieldStyle(),
+                            ),
                           ),
                         )
                       ],
