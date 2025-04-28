@@ -1,35 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:food_delivery_app/services/database.dart';
-import 'package:food_delivery_app/services/shared_pref.dart';
 import 'package:food_delivery_app/services/widget_support.dart';
 
-class Order extends StatefulWidget {
-  const Order({super.key});
+class AllOrders extends StatefulWidget {
+  const AllOrders({super.key});
 
   @override
-  State<Order> createState() => _OrderState();
+  State<AllOrders> createState() => _AllOrdersState();
 }
 
-class _OrderState extends State<Order> {
-
-  String? id;
-  
-  getTheSharedPref() async {
-    id = await SharedpreferenceHelper().getUserId();
-    print(id);
-    setState(() {
-      
-    });
-  }
+class _AllOrdersState extends State<AllOrders> {
 
   getontheload() async {
-    await getTheSharedPref();
-    ordersStream = await DatabaseMethods().getUserOrders(id!);
-    print(ordersStream);
-    setState(() {
-      
-    });
+    ordersStream = await DatabaseMethods().getAdminOrders();
+    setState(() {});
   }
 
   @override
@@ -139,18 +124,73 @@ class _OrderState extends State<Order> {
                                 const SizedBox(
                                   height: 5,
                                 ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.person,
+                                      color: Colors.red,
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      orderData["Name"],
+                                      style: AppWidget.simpleTextFieldStyle(),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.mail,
+                                      color: Colors.red,
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      orderData["Email"],
+                                      style: AppWidget.simpleTextFieldStyle(),
+                                    ),
+                                  ],
+                                ),
                                 Text(
                                   orderData["Status"],
                                   style: AppWidget.boldTextFieldStyle().copyWith(
                                     color: Colors.red,
+                                    fontSize: 20,
                                   ),
+                                ),
+                                GestureDetector(
+                                  onTap: () async{
+                                    await DatabaseMethods().updateAdminOrder(ds.id);
+                                    await DatabaseMethods().updateUserOrder(orderData["Id"], ds.id);
+                                    setState(() {});
+                                  },
+                                  child: Container(
+                                    width: 100,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        "Delivered",
+                                        style: AppWidget.whiteTextFieldStyle(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
                                 ),
                               ],
                             )
                           ],
-                        ),
-                        const SizedBox(
-                          height: 10,
                         ),
                       ],
                     ),
@@ -167,44 +207,69 @@ class _OrderState extends State<Order> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        margin: const EdgeInsets.only(top: 40),
-        child: Column(children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Orders",
-                style: AppWidget.headlineTextFieldStyle(),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Expanded(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                color: Color(0xFFececf8),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-              ),
-              child: Column(
+        margin: EdgeInsets.only(top: 40),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: Row(
                 children: [
-                  SizedBox (
-                    height: 20,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Color(0xffef2b39),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  Container(
-                    height: MediaQuery.of(context).size.height / 1.5,
-                    child: allOrders(),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 6,
+                  ),
+                  Text(
+                    "All Orders",
+                    style: AppWidget.headlineTextFieldStyle(),
                   ),
                 ],
               ),
             ),
-          )
-        ],)
+            const SizedBox(
+              height: 10,
+            ),
+            Expanded(
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Color(0xFFececf8),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    SizedBox (
+                      height: 10,
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height / 1.3,
+                      child: allOrders(),
+                    ),
+                
+                    
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

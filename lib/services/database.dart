@@ -75,4 +75,43 @@ class DatabaseMethods {
       print(e.toString());
     }
   }
+
+  Future<Stream<QuerySnapshot>> getAdminOrders() async {
+    try {
+      return await FirebaseFirestore.instance
+          .collection("Orders")
+          .where("Status", isEqualTo: "Pending")
+          .snapshots();
+    } catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+      throw Exception("Failed to fetch user orders: $e");
+    }
+  }
+
+  Future updateAdminOrder(String id) async {
+    try {
+      return await FirebaseFirestore.instance
+          .collection("Orders")
+          .doc(id)
+          .update({"Status":"Delivered"});
+    } catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+    }
+  }
+
+  Future updateUserOrder(String userid, String docid) async {
+    try {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(userid)
+          .collection("Orders")
+          .doc(docid)
+          .update({"Status":"Delivered"});
+    } catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+    }
+  }
 }
