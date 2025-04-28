@@ -5,6 +5,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:food_delivery_app/Admin/admin_login.dart';
 import 'package:food_delivery_app/Admin/all_order.dart';
 import 'package:food_delivery_app/Admin/home_admin.dart';
+import 'package:food_delivery_app/Admin/manage_users.dart';
 import 'package:food_delivery_app/config/stripe_config.dart';
 import 'package:food_delivery_app/pages/bottom_nav.dart';
 import 'package:food_delivery_app/pages/detail_page.dart';
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Login(),
+      home: ManageUsers(),
     );
   }
 }
