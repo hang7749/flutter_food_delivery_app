@@ -8,6 +8,7 @@ import 'package:food_delivery_app/services/database.dart';
 import 'package:food_delivery_app/services/shared_pref.dart';
 import 'package:food_delivery_app/services/widget_support.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:random_string/random_string.dart';
 
 class Wallet extends StatefulWidget {
@@ -33,6 +34,7 @@ class _WalletState extends State<Wallet> {
 
   getUserWallet() async {
     await getTheSharedPref();
+    walletStream = await DatabaseMethods().getUserTransaction(id!);
     QuerySnapshot querySnapshot = await DatabaseMethods().getUserWalletByEmail(email!);
     wallet = "${querySnapshot.docs[0]['wallet']}";
     setState(() {
@@ -44,6 +46,55 @@ class _WalletState extends State<Wallet> {
   void initState() {
     getUserWallet();
     super.initState();
+  }
+
+  Stream? walletStream;
+  
+  late Map<String, dynamic> orderData;
+
+  Widget allTransactions() {
+    return StreamBuilder(
+      stream: walletStream,
+      builder: (context, AsyncSnapshot snapshot) {
+        return snapshot.hasData? ListView.builder(
+          itemCount: snapshot.data.docs.length,
+          itemBuilder:(context, index){
+            DocumentSnapshot ds = snapshot.data.docs[index];            
+            orderData = ds.data() as Map<String, dynamic>;
+            return Container(
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: Color(0xFFececf8),
+                borderRadius: BorderRadius.circular(10)
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    ds['date'],
+                    style: AppWidget.headlineTextFieldStyle(),
+                  ),
+                  const SizedBox(width: 20),
+                  Column(
+                    children: [
+                      Text(
+                        "Amount added to wallet", style: AppWidget.simpleTextFieldStyle(),
+                      ),
+                      Text(
+                        "\$"+ds["amount"], style: TextStyle(
+                          color: Color(0xffef2b39), fontSize: 25, fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            );
+
+          }) : Container();
+      },
+    );
   }
 
   @override
@@ -229,11 +280,44 @@ class _WalletState extends State<Wallet> {
                               ),
                             ),
                           ),
-                        )
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
                       ],
                     ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              "Transaction History",
+                              style: AppWidget.boldTextFieldStyle(),
+                            ),
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            Container(
+                              height: MediaQuery.of(context).size.height / 2.5,
+                              child: allTransactions()),
+                          ],
+                        ),
+                      ),
+                    ),
                   )
-              
                 ],
               ),
             ),
@@ -279,6 +363,18 @@ class _WalletState extends State<Wallet> {
         int updatedWallet = int.parse(wallet!) + int.parse(amount);
         await DatabaseMethods().updateUserWallet(updatedWallet.toString(), id!);
         await getUserWallet();
+        setState(() {
+          
+        });
+
+        DateTime now = DateTime.now();
+        String formattedDate = DateFormat('dd MMM').format(now).toUpperCase();
+        Map<String, dynamic> userTransaction = {
+          "amount": amount,
+          "date": formattedDate,
+        };
+
+        await DatabaseMethods().addUserTransaction(userTransaction, id!);
 
         showDialog(
           context: context, 

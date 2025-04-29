@@ -138,4 +138,30 @@ class DatabaseMethods {
       print(e.toString());
     }
   }
+
+  Future addUserTransaction(Map<String, dynamic> userOrderMap, String id) async {
+    try {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(id).collection("Transaction")
+          .add(userOrderMap);
+    } catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+    }
+  }
+
+  Future<Stream<QuerySnapshot>> getUserTransaction(String id) async {
+    try {
+      return await FirebaseFirestore.instance
+          .collection("users")
+          .doc(id)
+          .collection("Transaction")
+          .snapshots();
+    } catch (e) {
+      // ignore: avoid_print
+      print(e.toString());
+      throw Exception("Failed to fetch user orders: $e");
+    }
+  }
 }
